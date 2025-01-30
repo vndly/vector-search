@@ -38,6 +38,7 @@ exports.import = onRequest(async (_, response) => {
   }
 });
 
+// https://firebase.google.com/docs/firestore/vector-search
 exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const characters = await db.collection("characters").get();
