@@ -45,6 +45,7 @@ exports.import = onRequest(async (_, response) => {
 });
 
 // https://firebase.google.com/docs/firestore/vector-search
+// https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
 exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const characters = await db.collection("characters").get();
@@ -90,17 +91,21 @@ const characterEmbedding = async (character) => {
   return FieldValue.vector(embedding[0]);
 };
 
+// https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#generative-ai-get-text-embedding-nodejs
+// https://console.cloud.google.com/apis/api/aiplatform.googleapis.com/cost?inv=1&invt=AboQqA&project=andstoreapps
 const calculateEmbedding = async (text) => {
-  const endpoint = `projects/andstoreapps/locations/us-central1/publishers/google/models/text-embedding-005`;
-  const instances = helpers.toValue({
+  const instances = [helpers.toValue({
     content: text,
     task_type: 'SEMANTIC_SIMILARITY',
-  });
+  })];
   const parameters = helpers.toValue({});
-  const request = { endpoint, instances, parameters };
+  const request = {
+    endpoint: 'projects/andstoreapps/locations/us-central1/publishers/google/models/text-embedding-005',
+    instances: instances,
+    parameters: parameters,
+  };
   const [response] = await client.predict(request);
-  const predictions = response.predictions;
-  const embeddings = predictions.map(p => {
+  const embeddings = response.predictions.map(p => {
     const embeddingsProto = p.structValue.fields.embeddings;
     const valuesProto = embeddingsProto.structValue.fields.values;
     return valuesProto.listValue.values.map(v => v.numberValue);
