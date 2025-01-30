@@ -1,19 +1,23 @@
 const { onRequest } = require("firebase-functions/v2/https");
-const { FieldValue } = require("@google-cloud/firestore");
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
-const axios = require("axios");
+//const { FieldValue } = require("@google-cloud/firestore");
+//const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+//const axios = require("axios");
 const admin = require("firebase-admin");
-const aiplatform = require("@google-cloud/aiplatform");
-const { PredictionServiceClient } = aiplatform.v1;
-const { helpers } = aiplatform;
+//const aiplatform = require("@google-cloud/aiplatform");
+//const { PredictionServiceClient } = aiplatform.v1;
+//const { helpers } = aiplatform;
 
 admin.initializeApp();
-const db = admin.firestore();
+//const db = admin.firestore();
 
-const clientOptions = { apiEndpoint: "us-central1-aiplatform.googleapis.com" };
-const client = new PredictionServiceClient(clientOptions);
+exports.helloWorld = onRequest((_, res) => {
+  res.send("Hello, World!");
+});
 
-exports.import = onRequest(async (_, response) => {
+//const clientOptions = { apiEndpoint: "us-central1-aiplatform.googleapis.com" };
+//const client = new PredictionServiceClient(clientOptions);
+
+/*exports.import = onRequest(async (_, response) => {
   try {
     let counter = 0;
     let nextUrl = "https://rickandmortyapi.com/api/character";
@@ -42,12 +46,12 @@ exports.import = onRequest(async (_, response) => {
     console.error(error);
     response.status(500).send(error.toString());
   }
-});
+});*/
 
 // https://firebase.google.com/docs/firestore/vector-search
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
 // https://www.youtube.com/watch?v=3u7u4mNbYZI
-exports.search = onRequest(async (request, response) => {
+/*exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const embedding = await calculateEmbedding(query);
   const collection = db.collection("characters");
@@ -115,4 +119,4 @@ const calculateEmbedding = async (text) => {
   });
 
   return embeddings[0];
-}
+}*/
