@@ -46,6 +46,7 @@ exports.import = onRequest(async (_, response) => {
 
 // https://firebase.google.com/docs/firestore/vector-search
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
+// https://www.youtube.com/watch?v=3u7u4mNbYZI
 exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const embedding = await calculateEmbedding(query);
@@ -70,7 +71,7 @@ exports.onCharacterCreated = onDocumentCreated("characters/{id}", async (event) 
   const embedding = await characterEmbedding(character);
 
   await event.data.ref.update({
-    embedding: embedding,
+    embedding: FieldValue.vector(embedding),
   });
   console.log(`Embeddings updated for ${event.data.ref.path}`);
 });
@@ -90,7 +91,7 @@ const characterEmbedding = async (character) => {
   const embedding = await calculateEmbedding(summary.join("\n"));
   console.log(`Calculated embeddings of length: ${embedding.length}`);
 
-  return FieldValue.vector(embedding);
+  return embedding;
 };
 
 // https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#generative-ai-get-text-embedding-nodejs
