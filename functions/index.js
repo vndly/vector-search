@@ -1,11 +1,17 @@
-const {onRequest} = require("firebase-functions/v2/https");
-const {FieldValue} = require("@google-cloud/firestore");
-const {onDocumentCreated} = require("firebase-functions/v2/firestore");
+const { onRequest } = require("firebase-functions/v2/https");
+const { FieldValue } = require("@google-cloud/firestore");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const axios = require("axios");
 const admin = require("firebase-admin");
+const aiplatform = require('@google-cloud/aiplatform');
+const { PredictionServiceClient } = aiplatform.v1;
+const { helpers } = aiplatform;
 
 admin.initializeApp();
 const db = admin.firestore();
+
+const clientOptions = { apiEndpoint: 'us-central1-aiplatform.googleapis.com' };
+const client = new PredictionServiceClient(clientOptions);
 
 exports.import = onRequest(async (_, response) => {
   try {
@@ -58,7 +64,7 @@ exports.search = onRequest(async (request, response) => {
 
 exports.onCharacterCreated = onDocumentCreated("characters/{id}", async (event) => {
   const character = event.data.data();
-  const embedding = await calculateEmbedding(character);
+  const embedding = await characterEmbedding(character);
 
   await event.data.ref.update({
     embedding: embedding,
@@ -66,7 +72,7 @@ exports.onCharacterCreated = onDocumentCreated("characters/{id}", async (event) 
   console.log(`Embeddings updated for ${event.data.ref.path}`);
 });
 
-const calculateEmbedding = async (character) => {
+const characterEmbedding = async (character) => {
   const summary = [character.name];
 
   if (character.location.name) {
@@ -78,6 +84,27 @@ const calculateEmbedding = async (character) => {
   }
 
   console.log(`Calculating embeddings with: ${JSON.stringify(summary)}`);
+  const embedding = await calculateEmbedding(summary.join("\n"));
+  console.log(`Calculated embeddings of length: ${embedding[0].length}`);
 
-  return FieldValue.vector([1.0, 2.0, 3.0, 4.0, 5.0]);
+  return FieldValue.vector(embedding[0]);
 };
+
+const calculateEmbedding = async (text) => {
+  const endpoint = `projects/andstoreapps/locations/us-central1/publishers/google/models/text-embedding-005`;
+  const instances = helpers.toValue({
+    content: text,
+    task_type: 'SEMANTIC_SIMILARITY',
+  });
+  const parameters = helpers.toValue({});
+  const request = { endpoint, instances, parameters };
+  const [response] = await client.predict(request);
+  const predictions = response.predictions;
+  const embeddings = predictions.map(p => {
+    const embeddingsProto = p.structValue.fields.embeddings;
+    const valuesProto = embeddingsProto.structValue.fields.values;
+    return valuesProto.listValue.values.map(v => v.numberValue);
+  });
+
+  return embeddings;
+}

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@google-cloud/aiplatform": "^3.34.0",
     "axios": "^1.7.9",
     "firebase-admin": "^13.0.2"
   }
