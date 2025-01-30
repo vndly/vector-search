@@ -22,16 +22,15 @@ exports.import = onRequest(async (_, response) => {
         batch.set(docRef, character);
       }
 
-      const res = await batch.commit();
-      console.log(res);
+      await batch.commit();
 
-      nextUrl = apiResponse.data.info.next;
+      nextUrl = undefined; // apiResponse.data.info.next;
     }
 
     response.send(`Imported ${counter} characters`);
   } catch (error) {
     console.error(error);
-    response.status(500).send();
+    response.status(500).send(error.toString());
   }
 });
 
