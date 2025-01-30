@@ -46,7 +46,8 @@
 
     searchButton.addEventListener('click', function () {
       const query = queryInput.value;
-      const url = 'https://us-central1-andstoreapps.cloudfunctions.net/search?query=' + encodeURIComponent(query);
+      // const url = 'https://us-central1-andstoreapps.cloudfunctions.net/search?query=' + encodeURIComponent(query);
+      const url = 'http://127.0.0.1:5001/andstoreapps/us-central1/search?query=' + encodeURIComponent(query);
       window.location.href = url;
     });
   </script>

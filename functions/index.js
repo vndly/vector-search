@@ -48,10 +48,33 @@ exports.import = onRequest(async (_, response) => {
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
 exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
-  const characters = await db.collection("characters").get();
+  const collection = await db.collection("characters");
   const matches = [];
 
-  for (const character of characters.docs) {
+  //const snapshot = await collection.get();
+  /*for (const character of snapshot.docs) {
+    const data = character.data();
+
+    if (data.name.toString().toLowerCase().includes(query)) {
+      console.log(`Found match for ${data.name}`);
+      matches.push(data);
+    }
+  }*/
+
+  const embedding = await calculateEmbedding(query);
+
+  const vectorQuery = collection.findNearest({
+    vectorField: 'embedding_field',
+    queryVector: embedding,
+    limit: 10,
+    //distanceThreshold: 1,
+    //distanceResultField: 'vector_distance',
+    distanceMeasure: 'COSINE',
+  });
+
+  const snapshot = await vectorQuery.get();
+
+  for (const character of snapshot.docs) {
     const data = character.data();
 
     if (data.name.toString().toLowerCase().includes(query)) {
@@ -84,11 +107,11 @@ const characterEmbedding = async (character) => {
     summary.push(character.type);
   }
 
-  console.log(`Calculating embeddings with: ${JSON.stringify(summary)}`);
+  console.log(`Calculating embeddings with: "${summary.join("\n")}"`);
   const embedding = await calculateEmbedding(summary.join("\n"));
-  console.log(`Calculated embeddings of length: ${embedding[0].length}`);
+  console.log(`Calculated embeddings of length: ${embedding.length}`);
 
-  return FieldValue.vector(embedding[0]);
+  return FieldValue.vector(embedding);
 };
 
 // https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#generative-ai-get-text-embedding-nodejs
@@ -111,5 +134,5 @@ const calculateEmbedding = async (text) => {
     return valuesProto.listValue.values.map(v => v.numberValue);
   });
 
-  return embeddings;
+  return embeddings[0];
 }
