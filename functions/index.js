@@ -1,5 +1,5 @@
 const {onRequest} = require("firebase-functions/v2/https");
 
-exports.search = onRequest((_, response) => {
-  response.send("Hello from Firebase!");
+exports.search = onRequest((request, response) => {
+  response.send(`Searching for ${request.query.query}`);
 });
