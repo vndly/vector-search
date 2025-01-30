@@ -1,2 +1,1 @@
-# vector-search
-Vector search example
+# Vector search example
