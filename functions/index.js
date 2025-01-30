@@ -3,14 +3,14 @@ const { FieldValue } = require("@google-cloud/firestore");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const axios = require("axios");
 const admin = require("firebase-admin");
-const aiplatform = require('@google-cloud/aiplatform');
+const aiplatform = require("@google-cloud/aiplatform");
 const { PredictionServiceClient } = aiplatform.v1;
 const { helpers } = aiplatform;
 
 admin.initializeApp();
 const db = admin.firestore();
 
-const clientOptions = { apiEndpoint: 'us-central1-aiplatform.googleapis.com' };
+const clientOptions = { apiEndpoint: "us-central1-aiplatform.googleapis.com" };
 const client = new PredictionServiceClient(clientOptions);
 
 exports.import = onRequest(async (_, response) => {
@@ -52,12 +52,12 @@ exports.search = onRequest(async (request, response) => {
   const embedding = await calculateEmbedding(query);
   const collection = db.collection("characters");
   const vectorQuery = collection.findNearest({
-    vectorField: 'embedding_field',
+    vectorField: "embedding_field",
     queryVector: embedding,
     limit: 10,
     //distanceThreshold: 1,
     //distanceResultField: 'vector_distance',
-    distanceMeasure: 'COSINE',
+    distanceMeasure: "COSINE",
   });
 
   const snapshot = await vectorQuery.get();
@@ -99,11 +99,11 @@ const characterEmbedding = async (character) => {
 const calculateEmbedding = async (text) => {
   const instances = [helpers.toValue({
     content: text,
-    task_type: 'SEMANTIC_SIMILARITY',
+    task_type: "SEMANTIC_SIMILARITY",
   })];
   const parameters = helpers.toValue({});
   const request = {
-    endpoint: 'projects/andstoreapps/locations/us-central1/publishers/google/models/text-embedding-005',
+    endpoint: "projects/andstoreapps/locations/us-central1/publishers/google/models/text-embedding-005",
     instances: instances,
     parameters: parameters,
   };

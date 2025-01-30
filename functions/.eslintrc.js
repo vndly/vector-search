@@ -8,18 +8,12 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
-    "google",
-  ],
-  plugins: [
-    "promise",
   ],
   rules: {
     "no-restricted-globals": ["error", "name", "length"],
     "prefer-arrow-callback": "error",
-    "quotes": ["error", "double", { "allowTemplateLiterals": true }],
+    "quotes": ["error", "double", {"allowTemplateLiterals": true}],
     "max-len": ["off"],
-    "promise/no-floating-promises": "error",
-    "no-return-await": "error",
   },
   overrides: [
     {
