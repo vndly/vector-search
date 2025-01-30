@@ -55,10 +55,28 @@ exports.search = onRequest(async (request, response) => {
   response.send(matches);
 });
 
-exports.onCharacterCreated = onDocumentCreated("characters/{id}", (event) => {
+exports.onCharacterCreated = onDocumentCreated("characters/{id}", async (event) => {
   const character = event.data.data();
-  character.embedding = FieldValue.vector([1.0, 2.0, 3.0, 4.0, 5.0]);
+  const embedding = await calculateEmbedding(character);
 
-  event.data.ref.update(character);
+  await event.data.ref.update({
+    embedding: embedding,
+  });
   console.log(`Embeddings updated for ${event.data.ref.path}`);
 });
+
+const calculateEmbedding = async (character) => {
+  const summary = [character.name];
+
+  if (character.location.name) {
+    summary.push(character.location.name);
+  }
+
+  if (character.type) {
+    summary.push(character.type);
+  }
+
+  console.log(`Calculating embeddings with: ${JSON.stringify(summary)}`);
+
+  return FieldValue.vector([1.0, 2.0, 3.0, 4.0, 5.0]);
+};
