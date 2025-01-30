@@ -48,21 +48,8 @@ exports.import = onRequest(async (_, response) => {
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
 exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
-  const collection = await db.collection("characters");
-  const matches = [];
-
-  //const snapshot = await collection.get();
-  /*for (const character of snapshot.docs) {
-    const data = character.data();
-
-    if (data.name.toString().toLowerCase().includes(query)) {
-      console.log(`Found match for ${data.name}`);
-      matches.push(data);
-    }
-  }*/
-
   const embedding = await calculateEmbedding(query);
-
+  const collection = db.collection("characters");
   const vectorQuery = collection.findNearest({
     vectorField: 'embedding_field',
     queryVector: embedding,
@@ -73,15 +60,7 @@ exports.search = onRequest(async (request, response) => {
   });
 
   const snapshot = await vectorQuery.get();
-
-  for (const character of snapshot.docs) {
-    const data = character.data();
-
-    if (data.name.toString().toLowerCase().includes(query)) {
-      console.log(`Found match for ${data.name}`);
-      matches.push(data);
-    }
-  }
+  const matches = snapshot.docs.map(doc => doc.data());
 
   response.send(matches);
 });
