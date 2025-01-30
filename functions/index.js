@@ -1,4 +1,6 @@
 const {onRequest} = require("firebase-functions/v2/https");
+const {FieldValue} = require("@google-cloud/firestore");
+const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 const axios = require("axios");
 const admin = require("firebase-admin");
 
@@ -23,9 +25,10 @@ exports.import = onRequest(async (_, response) => {
         batch.set(docRef, character);
       }
 
-      await batch.commit();
+      const writes = await batch.commit();
+      console.log(`Written ${writes.length} characters`);
 
-      nextUrl = apiResponse.data.info.next;
+      nextUrl = undefined; // apiResponse.data.info.next;
     }
 
     response.send(`Imported ${counter} characters`);
@@ -44,9 +47,18 @@ exports.search = onRequest(async (request, response) => {
     const data = character.data();
 
     if (data.name.toString().toLowerCase().includes(query)) {
+      console.log(`Found match for ${data.name}`);
       matches.push(data);
     }
   }
 
   response.send(matches);
+});
+
+exports.onCharacterCreated = onDocumentCreated("characters/{id}", (event) => {
+  const character = event.data.data();
+  character.embedding = FieldValue.vector([1.0, 2.0, 3.0, 4.0, 5.0]);
+
+  event.data.ref.update(character);
+  console.log(`Embeddings updated for ${event.data.ref.path}`);
 });
