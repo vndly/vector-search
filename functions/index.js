@@ -110,6 +110,8 @@ const getMovies = (filePath) => {
 exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const distance = request.query.distance.toString().toUpperCase();
+  const threshold = parseFloat(request.query.threshold);
+  const limit = parseInt(request.query.limit);
   const embedding = await calculateEmbedding(query);
   console.log(`Query: "${query}" with embedding length "${embedding.length}" using distance "${distance}"`);
 
@@ -118,9 +120,9 @@ exports.search = onRequest(async (request, response) => {
   const vectorQuery = collection.findNearest({
     vectorField: "embedding",
     queryVector: embedding,
-    limit: 10,
-    //distanceThreshold: 1,
-    //distanceResultField: 'vector_distance',
+    limit: limit,
+    distanceThreshold: threshold,
+    distanceResultField: "vector_distance",
     distanceMeasure: distance, // 'EUCLIDEAN' | 'COSINE' | 'DOT_PRODUCT'
   });
 
@@ -130,7 +132,16 @@ exports.search = onRequest(async (request, response) => {
   const snapshot = await vectorQuery.get();
   console.log(`Found ${snapshot.docs.length} matches`);
 
-  const matches = snapshot.docs.map(doc => doc.data());
+  const matches = snapshot.docs.map(doc => {
+    const data = doc.data();
+
+    return {
+      title: data.title,
+      genres: data.genres,
+      summary: data.summary,
+      cast: data.cast,
+    }
+  });
 
   response.send(matches);
 });
