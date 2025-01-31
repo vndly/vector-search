@@ -19,6 +19,7 @@ const client = new PredictionServiceClient(clientOptions);
 exports.import = onRequest(async (_, response) => {
   const movies = await getMovies("data/data.csv");
   const chunks = chunkArray(movies, 500);
+  let count = 0;
 
   for (const chunk of chunks) {
     const batch = db.batch();
@@ -31,13 +32,14 @@ exports.import = onRequest(async (_, response) => {
 
     const writes = await batch.commit();
     console.log(`Written ${writes.length} movies`);
+    count += writes.length;
 
     if (isEmulator) {
       break;
     }
   }
 
-  response.send(`Imported ${movies.length} movies`);
+  response.send(`Imported ${count} movies`);
 });
 
 const chunkArray = (array, chunkSize) => {
