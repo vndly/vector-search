@@ -127,7 +127,7 @@ const movieEmbedding = async (movie) => {
 };
 
 // https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#generative-ai-get-text-embedding-nodejs
-// https://console.cloud.google.com/apis/api/aiplatform.googleapis.com/cost?inv=1&invt=AboQqA&project=andstoreapps
+// https://console.cloud.google.com/apis/api/aiplatform.googleapis.com/cost?inv=1&invt=AboQqA&project=max-prototypes
 const calculateEmbedding = async (text) => {
   const instances = [helpers.toValue({
     content: text,
@@ -135,7 +135,7 @@ const calculateEmbedding = async (text) => {
   })];
   const parameters = helpers.toValue({});
   const request = {
-    endpoint: "projects/andstoreapps/locations/us-central1/publishers/google/models/text-embedding-005",
+    endpoint: "projects/max-prototypes/locations/us-central1/publishers/google/models/text-embedding-005",
     instances: instances,
     parameters: parameters,
   };
