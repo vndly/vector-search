@@ -31,7 +31,7 @@ exports.import = onRequest(async (_, response) => {
     }
 
     const writes = await batch.commit();
-    console.log(`Written ${writes.length} movies`);
+    console.log(`Written ${writes.length} movies x`);
     count += writes.length;
 
     if (isEmulator) {
@@ -107,7 +107,7 @@ exports.onMovieCreated = onDocumentCreated("movies/{id}", async (event) => {
     await event.data.ref.update({
       embedding: FieldValue.vector(embedding),
     });
-    console.log(`Embeddings updated for ${event.data.ref.path}`);
+    console.log(`Embeddings updated for ${event.data.ref.path} x`);
   }
 });
 
