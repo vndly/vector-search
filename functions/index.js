@@ -83,8 +83,10 @@ const getMovies = (filePath) => {
 // https://firebase.google.com/docs/firestore/vector-search
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
 // https://www.youtube.com/watch?v=3u7u4mNbYZI
+// 'EUCLIDEAN' | 'COSINE' | 'DOT_PRODUCT'
 exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
+  const distance = request.query.distance.toString().toUpperCase();
   const embedding = await calculateEmbedding(query);
   console.log(`Query: "${query}" with embedding: ${embedding}`);
 
@@ -96,8 +98,11 @@ exports.search = onRequest(async (request, response) => {
     limit: 10,
     //distanceThreshold: 1,
     //distanceResultField: 'vector_distance',
-    distanceMeasure: "COSINE",
+    distanceMeasure: distance,
   });
+
+  const explainResult = await vectorQuery.query.explain({analyze: true});
+  console.log(`Query explained: ${JSON.stringify(explainResult)}`);
 
   const snapshot = await vectorQuery.get();
   console.log(`Found ${snapshot.docs.length} matches`);
