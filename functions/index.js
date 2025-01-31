@@ -1,20 +1,18 @@
 const { onRequest } = require("firebase-functions/v2/https");
-const { FieldValue } = require("@google-cloud/firestore");
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+//const { FieldValue } = require("@google-cloud/firestore");
+//const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 const fs = require("fs");
 const crypto = require("crypto");
 const csv = require("csv-parser");
-const aiplatform = require("@google-cloud/aiplatform");
-const { PredictionServiceClient } = aiplatform.v1;
-const { helpers } = aiplatform;
+//const aiplatform = require("@google-cloud/aiplatform");
+//const { PredictionServiceClient } = aiplatform.v1;
+//const { helpers } = aiplatform;
 
 admin.initializeApp();
 
 const db = admin.firestore();
 const isEmulator = process.env.FIREBASE_EMULATOR_HUB ? true : false;
-const clientOptions = { apiEndpoint: "us-central1-aiplatform.googleapis.com" };
-const client = new PredictionServiceClient(clientOptions);
 
 exports.import = onRequest(async (_, response) => {
   const movies = await getMovies("data/data.csv");
@@ -99,7 +97,7 @@ const getMovies = (filePath) => {
   response.send(matches);
 });*/
 
-exports.onMovieCreated = onDocumentCreated("movies/{id}", async (event) => {
+/*exports.onMovieCreated = onDocumentCreated("movies/{id}", async (event) => {
   if (!isEmulator) {
     const movie = event.data.data();
     const embedding = await movieEmbedding(movie);
@@ -139,6 +137,8 @@ const calculateEmbedding = async (text) => {
     instances: instances,
     parameters: parameters,
   };
+  const clientOptions = { apiEndpoint: "us-central1-aiplatform.googleapis.com" };
+  const client = new PredictionServiceClient(clientOptions);
   const [response] = await client.predict(request);
   const embeddings = response.predictions.map(p => {
     const embeddingsProto = p.structValue.fields.embeddings;
@@ -147,4 +147,4 @@ const calculateEmbedding = async (text) => {
   });
 
   return embeddings[0];
-}
+}*/
