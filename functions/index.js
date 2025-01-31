@@ -20,10 +20,7 @@ exports.helloWorld = onRequest((_, res) => {
 //const client = new PredictionServiceClient(clientOptions);
 
 exports.import = onRequest(async (_, response) => {
-  const test = await readCSV("data/data.csv");
-  console.log(test[0]);
-  let movies = await getMovies();
-  movies = movies.slice(1, 101);
+  const movies = await getMovies("data/data.csv");
   const chunks = chunkArray(movies, 500);
 
   for (const chunk of chunks) {
@@ -42,24 +39,6 @@ exports.import = onRequest(async (_, response) => {
   response.send(`Imported ${movies.length} movies`);
 });
 
-const getMovies = async () => {
-  const content = fs.readFileSync("data/data.csv", "utf8");
-  const lines = content.split("\n");
-  
-  return lines.map(getMovie);
-}
-
-const getMovie = (line) => {
-  const [title, genres, summary, cast] = line.split(",");
-  
-  return {
-    title: title,
-    genres: genres,
-    summary: summary,
-    cast: cast,
-  }
-}
-
 const chunkArray = (array, chunkSize) => {
   const chunks = [];
 
@@ -74,7 +53,7 @@ const generateHash = (input) => {
   return crypto.createHash("sha256").update(input).digest("hex");
 }
 
-const readCSV = (filePath) => {
+const getMovies = (filePath) => {
   return new Promise((resolve, reject) => {
     const results = [];
     fs.createReadStream(filePath)
