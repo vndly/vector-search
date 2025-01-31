@@ -77,9 +77,10 @@ const getMovies = (filePath) => {
 // https://firebase.google.com/docs/firestore/vector-search
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
 // https://www.youtube.com/watch?v=3u7u4mNbYZI
-/*exports.search = onRequest(async (request, response) => {
+exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const embedding = await calculateEmbedding(query);
+  const db = admin.firestore();
   const collection = db.collection("movies");
   const vectorQuery = collection.findNearest({
     vectorField: "embedding_field",
@@ -94,7 +95,7 @@ const getMovies = (filePath) => {
   const matches = snapshot.docs.map(doc => doc.data());
 
   response.send(matches);
-});*/
+});
 
 exports.onMovieCreated = onDocumentCreated("movies/{id}", async (event) => {
   if (!isEmulator) {
