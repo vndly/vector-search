@@ -87,7 +87,7 @@ exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const distance = request.query.distance.toString().toUpperCase();
   const embedding = await calculateEmbedding(query);
-  console.log(`Query: "${query}" with embedding length: ${embedding.length} using ${distance} distance`);
+  console.log(`Query: "${query}" with embedding length "${embedding.length}" using distance "${distance}"`);
 
   const db = admin.firestore();
   const collection = db.collection("movies"); //.where("embedding", "!=", null);
