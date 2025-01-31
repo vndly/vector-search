@@ -80,6 +80,8 @@ const getMovies = (filePath) => {
 exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const embedding = await calculateEmbedding(query);
+  console.log(`Query: "${query}" with embedding: ${embedding}`);
+
   const db = admin.firestore();
   const collection = db.collection("movies");
   const vectorQuery = collection.findNearest({
@@ -92,6 +94,8 @@ exports.search = onRequest(async (request, response) => {
   });
 
   const snapshot = await vectorQuery.get();
+  console.log(`Found ${snapshot.docs.length} matches`);
+
   const matches = snapshot.docs.map(doc => doc.data());
 
   response.send(matches);
