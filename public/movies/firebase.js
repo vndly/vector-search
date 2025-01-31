@@ -7,7 +7,6 @@ import {
 } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCI5bs6Lj7jlkLlk9D3m30d0P9_GIytGPo',
   authDomain: 'max-prototypes.firebaseapp.com',
   projectId: 'max-prototypes',
   storageBucket: 'max-prototypes.firebasestorage.app',
@@ -22,9 +21,7 @@ const firestore = getFirestore(app)
 getProducts(onProducts)
 
 function onProducts(products) {
-  for (const product of products) {
-    console.log(JSON.stringify(product))
-  }
+  console.log(products.length)
 }
 
 function productCollection() {
@@ -41,13 +38,14 @@ export function getProducts(callback) {
 
     for (const doc of snapshot.docs) {
       const data = doc.data()
-      /*products.push({
+      const movie = {
         name: data.title,
         genres: data.genres,
         summary: data.summary,
         cast: data.cast,
-      })*/
-      products.push(data)
+      }
+      products.push(movie)
+      console.log(movie)
     }
 
     callback(products)
