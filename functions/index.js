@@ -8,7 +8,7 @@ const admin = require("firebase-admin");
 //const { helpers } = aiplatform;
 
 admin.initializeApp();
-//const db = admin.firestore();
+const db = admin.firestore();
 
 exports.helloWorld = onRequest((_, res) => {
   res.send("Hello, World!");
@@ -17,19 +17,20 @@ exports.helloWorld = onRequest((_, res) => {
 //const clientOptions = { apiEndpoint: "us-central1-aiplatform.googleapis.com" };
 //const client = new PredictionServiceClient(clientOptions);
 
-/*exports.import = onRequest(async (_, response) => {
+// https://www.kaggle.com/datasets?search=imdb
+exports.import = onRequest(async (_, response) => {
   try {
     let counter = 0;
     let nextUrl = "https://rickandmortyapi.com/api/character";
 
     while (nextUrl) {
       console.log(`Fetching ${nextUrl}`);
-      const apiResponse = await axios.get(nextUrl);
-      counter += apiResponse.data.results.length;
+      //const apiResponse = await axios.get(nextUrl);
+      //counter += apiResponse.data.results.length;
 
       const batch = db.batch();
 
-      for (const character of apiResponse.data.results) {
+      for (const character of [] /*apiResponse.data.results*/) {
         delete character.episode;
         const docRef = db.collection("characters").doc(character.id.toString());
         batch.set(docRef, character);
@@ -46,7 +47,7 @@ exports.helloWorld = onRequest((_, res) => {
     console.error(error);
     response.status(500).send(error.toString());
   }
-});*/
+});
 
 // https://firebase.google.com/docs/firestore/vector-search
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
