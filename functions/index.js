@@ -1,6 +1,6 @@
 const admin = require("firebase-admin");
 const { onRequest } = require("firebase-functions/v2/https");
-//const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 
 admin.initializeApp();
 const isEmulator = process.env.FIREBASE_EMULATOR_HUB ? true : false;
@@ -96,7 +96,7 @@ const getMovies = (filePath) => {
   response.send(matches);
 });*/
 
-/*exports.onMovieCreated = onDocumentCreated("movies/{id}", async (event) => {
+exports.onMovieCreated = onDocumentCreated("movies/{id}", async (event) => {
   if (!isEmulator) {
     const { FieldValue } = require("@google-cloud/firestore");
     const movie = event.data.data();
@@ -150,4 +150,4 @@ const calculateEmbedding = async (text) => {
   });
 
   return embeddings[0];
-}*/
+}
