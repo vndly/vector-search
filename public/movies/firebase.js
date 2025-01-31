@@ -1,10 +1,12 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js'
 import {
   getFirestore,
   doc,
   collection,
+  query,
+  where,
   onSnapshot
-} from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
+} from 'https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js'
 
 const firebaseConfig = {
   authDomain: 'max-prototypes.firebaseapp.com',
@@ -33,7 +35,9 @@ function productDocument(product) {
 }
 
 export function getProducts(callback) {
-  return onSnapshot(productCollection(), (snapshot) => {
+  const queryRequest = query(productCollection(), where("embedding", "!=", null))
+
+  return onSnapshot(queryRequest, (snapshot) => {
     const products = []
 
     for (const doc of snapshot.docs) {
