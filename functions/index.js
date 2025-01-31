@@ -1,8 +1,14 @@
 const admin = require("firebase-admin");
+const {setGlobalOptions} = require("firebase-functions/v2");
 const { onRequest } = require("firebase-functions/v2/https");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 
 admin.initializeApp();
+
+setGlobalOptions({
+  memory: "512MiB"
+});
+
 const isEmulator = process.env.FIREBASE_EMULATOR_HUB ? true : false;
 
 exports.import = onRequest(async (_, response) => {
