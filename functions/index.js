@@ -38,6 +38,30 @@ exports.import = onRequest(async (_, response) => {
   response.send(`Imported ${count} movies`);
 });
 
+exports.recompute = onRequest(async (_, response) => {
+  const db = admin.firestore();
+  const collection = db.collection("movies");
+  const snapshot = await collection.get();
+  let counter = 0;
+
+  for (const doc of snapshot.docs) {
+    const movie = doc.data();
+
+    if (!movie.embedding) {
+      doc.ref.update({
+        summary: `${movie.summary}.`,
+      })
+      counter++;
+    }
+
+    if (counter >= 1000) {
+      break;
+    }
+  }
+
+  response.send(`Updated ${counter} movies`);
+});
+
 const chunkArray = (array, chunkSize) => {
   const chunks = [];
 
@@ -90,7 +114,7 @@ exports.search = onRequest(async (request, response) => {
   console.log(`Query: "${query}" with embedding length "${embedding.length}" using distance "${distance}"`);
 
   const db = admin.firestore();
-  const collection = db.collection("movies"); //.where("embedding", "!=", null);
+  const collection = db.collection("movies").where("embedding", "!=", null);
   const vectorQuery = collection.findNearest({
     vectorField: "embedding",
     queryVector: embedding,
@@ -118,6 +142,7 @@ exports.onMovieCreated = onDocumentWritten("movies/{id}", async (event) => {
     console.log(`Movie updated: ${path} data: ${JSON.stringify(movie)}`);
 
     if (!movie.embedding) {
+      console.log(`Calculating embedding for ${path}`);
       const embedding = await movieEmbedding(movie);
       const db = admin.firestore();
       const docRef = db.doc(path);
@@ -127,6 +152,8 @@ exports.onMovieCreated = onDocumentWritten("movies/{id}", async (event) => {
         embedding: FieldValue.vector(embedding),
       });
       console.log(`Embeddings updated for ${path}`);
+    } else {
+      console.log(`Movie already had embedding ${path}`);
     }
   }
 });
