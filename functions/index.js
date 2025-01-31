@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const { onRequest } = require("firebase-functions/v2/https");
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onDocumentWritten, } = require("firebase-functions/v2/firestore");
 
 admin.initializeApp();
 
@@ -111,16 +111,23 @@ exports.search = onRequest(async (request, response) => {
   response.send(matches);
 });
 
-exports.onMovieCreated = onDocumentCreated("movies/{id}", async (event) => {
+exports.onMovieCreated = onDocumentWritten("movies/{id}", async (event) => {
   if (!isEmulator) {
-    const { FieldValue } = require("@google-cloud/firestore");
-    const movie = event.data.data();
-    const embedding = await movieEmbedding(movie);
+    const movie = event.data.after.data();
+    const path = event.document;
+    console.log(`Movie updated: ${path} data: ${JSON.stringify(movie)}`);
 
-    await event.data.ref.update({
-      embedding: FieldValue.vector(embedding),
-    });
-    console.log(`Embeddings updated for ${event.data.ref.path}`);
+    if (!movie.embedding) {
+      const embedding = await movieEmbedding(movie);
+      const db = admin.firestore();
+      const docRef = db.doc(path);
+      const { FieldValue } = require("@google-cloud/firestore");
+
+      await docRef.update({
+        embedding: FieldValue.vector(embedding),
+      });
+      console.log(`Embeddings updated for ${path}`);
+    }
   }
 });
 
