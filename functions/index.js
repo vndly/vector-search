@@ -90,7 +90,7 @@ exports.search = onRequest(async (request, response) => {
   console.log(`Query: "${query}" with embedding: ${embedding}`);
 
   const db = admin.firestore();
-  const collection = db.collection("movies").where("embedding", "!=", null);
+  const collection = db.collection("movies"); //.where("embedding", "!=", null);
   const vectorQuery = collection.findNearest({
     vectorField: "embedding",
     queryVector: embedding,
