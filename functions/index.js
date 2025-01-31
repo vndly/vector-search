@@ -1,8 +1,10 @@
 const { onRequest } = require("firebase-functions/v2/https");
 //const { FieldValue } = require("@google-cloud/firestore");
 //const { onDocumentCreated } = require("firebase-functions/v2/firestore");
-//const axios = require("axios");
 const admin = require("firebase-admin");
+const fs = require("fs");
+const crypto = require("crypto");
+const csv = require("csv-parser");
 //const aiplatform = require("@google-cloud/aiplatform");
 //const { PredictionServiceClient } = aiplatform.v1;
 //const { helpers } = aiplatform;
@@ -17,37 +19,83 @@ exports.helloWorld = onRequest((_, res) => {
 //const clientOptions = { apiEndpoint: "us-central1-aiplatform.googleapis.com" };
 //const client = new PredictionServiceClient(clientOptions);
 
-// https://www.kaggle.com/datasets?search=imdb
 exports.import = onRequest(async (_, response) => {
-  try {
-    let counter = 0;
-    let nextUrl = "https://rickandmortyapi.com/api/character";
+  const test = await readCSV("data/data.csv");
+  console.log(test[0]);
+  let movies = await getMovies();
+  movies = movies.slice(1, 101);
+  const chunks = chunkArray(movies, 500);
 
-    while (nextUrl) {
-      console.log(`Fetching ${nextUrl}`);
-      //const apiResponse = await axios.get(nextUrl);
-      //counter += apiResponse.data.results.length;
+  for (const chunk of chunks) {
+    const batch = db.batch();
 
-      const batch = db.batch();
-
-      for (const character of [] /*apiResponse.data.results*/) {
-        delete character.episode;
-        const docRef = db.collection("characters").doc(character.id.toString());
-        batch.set(docRef, character);
-      }
-
-      const writes = await batch.commit();
-      console.log(`Written ${writes.length} characters`);
-
-      nextUrl = undefined; // apiResponse.data.info.next;
+    for (const movie of chunk) {
+      const id = generateHash(movie.title);
+      const docRef = db.collection("movies").doc(id);
+      batch.set(docRef, movie);
     }
 
-    response.send(`Imported ${counter} characters`);
-  } catch (error) {
-    console.error(error);
-    response.status(500).send(error.toString());
+    const writes = await batch.commit();
+    console.log(`Written ${writes.length} movies`);
   }
+
+  response.send(`Imported ${movies.length} movies`);
 });
+
+const getMovies = async () => {
+  const content = fs.readFileSync("data/data.csv", "utf8");
+  const lines = content.split("\n");
+  
+  return lines.map(getMovie);
+}
+
+const getMovie = (line) => {
+  const [title, genres, summary, cast] = line.split(",");
+  
+  return {
+    title: title,
+    genres: genres,
+    summary: summary,
+    cast: cast,
+  }
+}
+
+const chunkArray = (array, chunkSize) => {
+  const chunks = [];
+
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+
+  return chunks;
+}
+
+const generateHash = (input) => {
+  return crypto.createHash("sha256").update(input).digest("hex");
+}
+
+const readCSV = (filePath) => {
+  return new Promise((resolve, reject) => {
+    const results = [];
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on("data", (data) => {
+        const { title, genre, summary, cast } = data;
+        results.push({
+          title: title,
+          genres: genre.split(",").map((genre) => genre.trim()),
+          summary: summary,
+          cast: cast.split(",").map((actor) => actor.trim()),
+        });
+      })
+      .on("end", () => {
+        resolve(results);
+      })
+      .on("error", (error) => {
+        reject(error);
+      });
+  });
+};
 
 // https://firebase.google.com/docs/firestore/vector-search
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
