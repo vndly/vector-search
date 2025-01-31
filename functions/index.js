@@ -12,6 +12,8 @@ const csv = require("csv-parser");
 admin.initializeApp();
 const db = admin.firestore();
 
+const isEmulator = process.env.FIREBASE_EMULATOR_HUB ? true : false;
+
 exports.helloWorld = onRequest((_, res) => {
   res.send("Hello, World!");
 });
@@ -34,6 +36,10 @@ exports.import = onRequest(async (_, response) => {
 
     const writes = await batch.commit();
     console.log(`Written ${writes.length} movies`);
+
+    if (isEmulator) {
+      break;
+    }
   }
 
   response.send(`Imported ${movies.length} movies`);
