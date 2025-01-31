@@ -63,9 +63,9 @@ const getMovies = (filePath) => {
         const { title, genre, summary, cast } = data;
         results.push({
           title: title,
-          genres: genre.split(",").map((genre) => genre.trim()),
+          genres: genre.split(",").map(genre => genre.trim()),
           summary: summary,
-          cast: cast.split(",").map((actor) => actor.trim()),
+          cast: cast.split(",").map(actor => actor.trim()),
         });
       })
       .on("end", () => {
@@ -80,7 +80,7 @@ const getMovies = (filePath) => {
 // https://firebase.google.com/docs/firestore/vector-search
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
 // https://www.youtube.com/watch?v=3u7u4mNbYZI
-/*exports.search = onRequest(async (request, response) => {
+exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const embedding = await calculateEmbedding(query);
   const collection = db.collection("movies");
@@ -97,16 +97,18 @@ const getMovies = (filePath) => {
   const matches = snapshot.docs.map(doc => doc.data());
 
   response.send(matches);
-});*/
+});
 
 exports.onMovieCreated = onDocumentCreated("movies/{id}", async (event) => {
-  const movie = event.data.data();
-  const embedding = await movieEmbedding(movie);
+  if (!isEmulator) {
+    const movie = event.data.data();
+    const embedding = await movieEmbedding(movie);
 
-  await event.data.ref.update({
-    embedding: FieldValue.vector(embedding),
-  });
-  console.log(`Embeddings updated for ${event.data.ref.path}`);
+    await event.data.ref.update({
+      embedding: FieldValue.vector(embedding),
+    });
+    console.log(`Embeddings updated for ${event.data.ref.path}`);
+  }
 });
 
 const movieEmbedding = async (movie) => {
