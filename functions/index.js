@@ -1,25 +1,20 @@
 const { onRequest } = require("firebase-functions/v2/https");
-//const { FieldValue } = require("@google-cloud/firestore");
-//const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { FieldValue } = require("@google-cloud/firestore");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 const fs = require("fs");
 const crypto = require("crypto");
 const csv = require("csv-parser");
-//const aiplatform = require("@google-cloud/aiplatform");
-//const { PredictionServiceClient } = aiplatform.v1;
-//const { helpers } = aiplatform;
+const aiplatform = require("@google-cloud/aiplatform");
+const { PredictionServiceClient } = aiplatform.v1;
+const { helpers } = aiplatform;
 
 admin.initializeApp();
+
 const db = admin.firestore();
-
 const isEmulator = process.env.FIREBASE_EMULATOR_HUB ? true : false;
-
-exports.helloWorld = onRequest((_, res) => {
-  res.send("Hello, World!");
-});
-
-//const clientOptions = { apiEndpoint: "us-central1-aiplatform.googleapis.com" };
-//const client = new PredictionServiceClient(clientOptions);
+const clientOptions = { apiEndpoint: "us-central1-aiplatform.googleapis.com" };
+const client = new PredictionServiceClient(clientOptions);
 
 exports.import = onRequest(async (_, response) => {
   const movies = await getMovies("data/data.csv");
@@ -55,9 +50,7 @@ const chunkArray = (array, chunkSize) => {
   return chunks;
 }
 
-const generateHash = (input) => {
-  return crypto.createHash("sha256").update(input).digest("hex");
-}
+const generateHash = (input) => crypto.createHash("sha256").update(input).digest("hex");
 
 const getMovies = (filePath) => {
   return new Promise((resolve, reject) => {
@@ -88,7 +81,7 @@ const getMovies = (filePath) => {
 /*exports.search = onRequest(async (request, response) => {
   const query = request.query.query.toString().toLowerCase();
   const embedding = await calculateEmbedding(query);
-  const collection = db.collection("characters");
+  const collection = db.collection("movies");
   const vectorQuery = collection.findNearest({
     vectorField: "embedding_field",
     queryVector: embedding,
@@ -102,11 +95,11 @@ const getMovies = (filePath) => {
   const matches = snapshot.docs.map(doc => doc.data());
 
   response.send(matches);
-});
+});*/
 
-exports.onCharacterCreated = onDocumentCreated("characters/{id}", async (event) => {
-  const character = event.data.data();
-  const embedding = await characterEmbedding(character);
+exports.onMovieCreated = onDocumentCreated("movies/{id}", async (event) => {
+  const movie = event.data.data();
+  const embedding = await movieEmbedding(movie);
 
   await event.data.ref.update({
     embedding: FieldValue.vector(embedding),
@@ -114,19 +107,16 @@ exports.onCharacterCreated = onDocumentCreated("characters/{id}", async (event) 
   console.log(`Embeddings updated for ${event.data.ref.path}`);
 });
 
-const characterEmbedding = async (character) => {
-  const summary = [character.name];
+const movieEmbedding = async (movie) => {
+  const values = [
+    movie.title,
+    movie.genres.join(" "),
+    movie.summary,
+    movie.cast.join(" "),
+  ];
 
-  if (character.location.name) {
-    summary.push(character.location.name);
-  }
-
-  if (character.type) {
-    summary.push(character.type);
-  }
-
-  console.log(`Calculating embeddings with: "${summary.join("\n")}"`);
-  const embedding = await calculateEmbedding(summary.join("\n"));
+  console.log(`Calculating embeddings with: "${values.join("\n")}"`);
+  const embedding = await calculateEmbedding(values.join("\n"));
   console.log(`Calculated embeddings of length: ${embedding.length}`);
 
   return embedding;
@@ -153,4 +143,4 @@ const calculateEmbedding = async (text) => {
   });
 
   return embeddings[0];
-}*/
+}
