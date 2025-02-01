@@ -40,27 +40,30 @@ exports.import = onRequest(async (_, response) => {
 })
 
 exports.recompute = onRequest(async (_, response) => {
+  let count = 0
   const db = admin.firestore()
-  const collection = db.collection("movies")
-  const snapshot = await collection.get()
-  let counter = 0
+  const snapshot = await db.collection("movies").where("hasEmbedding", "==", false).limit(5).get()
+  const batch = db.batch()
 
   for (const doc of snapshot.docs) {
     const movie = doc.data()
+    const embedding = await movieEmbedding(movie)
 
-    if (!movie.embedding) {
-      doc.ref.update({
-        summary: `${movie.summary}.`,
+    if (embedding) {
+      batch.update(doc.ref, {
+        embedding: embedding,
+        hasEmbedding: true,
       })
-      counter++
-    }
-
-    if (counter >= 1000) {
-      break
+    } else {
+      console.log(`Error calculating embedding for ${movie.id}`)
     }
   }
 
-  response.send(`Updated ${counter} movies`)
+  const writes = await batch.commit()
+  console.log(`Updated ${writes.length} movies`)
+  count += writes.length
+
+  response.send(`Updated ${count} movies`)
 })
 
 const chunkArray = (array, chunkSize) => {
@@ -172,7 +175,7 @@ exports.search = onRequest(async (request, response) => {
   }
 })*/
 
-/*const movieEmbedding = async (movie) => {
+const movieEmbedding = async (movie) => {
   const values = [
     movie.title,
     movie.genres.join(" "),
@@ -185,7 +188,7 @@ exports.search = onRequest(async (request, response) => {
   console.log(`Calculated embeddings of length: ${embedding.length}`)
 
   return embedding
-}*/
+}
 
 // https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#generative-ai-get-text-embedding-nodejs
 // https://console.cloud.google.com/apis/api/aiplatform.googleapis.com/cost?inv=1&invt=AboQqA&project=max-prototypes
