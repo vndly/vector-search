@@ -81,7 +81,7 @@
           enableInputs(true)
 
           for (const movie of json) {
-            addMovieRow(movie)
+            addMovieRow(movie, query)
           }
         } catch (error) {
           show('loader', false)
@@ -103,15 +103,27 @@
       moviesList.style.display = show ? 'table' : 'none'
     }
 
-    function addMovieRow(movie) {
+    function addMovieRow(movie, query) {
       const moviesList = document.getElementById('moviesList')
       const tbody = moviesList.querySelector('tbody')
 
       const row = tbody.insertRow()
-      row.insertCell().textContent = movie.title
-      row.insertCell().textContent = movie.genres.join(', ')
-      row.insertCell().textContent = movie.summary
-      row.insertCell().textContent = movie.cast.join(', ')
+      row.insertCell().textContent = highlightText(movie.title, query)
+      row.insertCell().textContent = highlightText(movie.genres.join(', '), query)
+      row.insertCell().textContent = highlightText(movie.summary, query)
+      row.insertCell().textContent = highlightText(movie.cast.join(', '), query)
+    }
+
+    function highlightText(text, query) {
+      const lowerText = text.toLowerCase()
+      const lowerQuery = query.toLowerCase()
+      const index = lowerText.indexOf(lowerQuery)
+
+      if (index >= 0) {
+        return text.substring(0, index) + '<mark>' + text.substring(index, index + query.length) + '</mark>' + text.substring(index + query.length)
+      } else {
+        return text
+      }
     }
 
     function enableInputs(enable) {
@@ -184,6 +196,7 @@
     </table>
     <div class="spinner-border" id="loader" role="status"></div>
   </div>
+
 
   <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
