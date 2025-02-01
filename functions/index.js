@@ -37,6 +37,7 @@ exports.import = onRequest(async (_, response) => {
     }
   }
 
+  console.log(`Imported ${count} movies`)
   response.send(`Imported ${count} movies`)
 })
 
@@ -105,6 +106,8 @@ exports.recompute = onRequest(async (_, response) => {
   }
 
   const writes = await batch.commit()
+  console.log(`Updated ${writes.length} movies`)
+
   response.send(`Updated ${writes.length} movies`)
 })
 
@@ -131,8 +134,11 @@ exports.search = onRequest(async (request, response) => {
   const distance = request.query.distance.toString().toUpperCase()
   const threshold = parseFloat(request.query.threshold)
   const limit = parseInt(request.query.limit)
+  console.log(`Query "${query}" using distance "${distance} limited to "${limit}"`)
+
+  console.log(`Calculating embedding for query "${query}"`)
   const embedding = await calculateEmbedding(query)
-  console.log(`Query: "${query}" with embedding length "${embedding.length}" using distance "${distance}"`)
+  console.log(`Calculated embedding of length "${embedding.length}"`)
 
   const db = admin.firestore()
   const collection = db.collection("movies").where("embedding", "!=", null)
@@ -145,8 +151,8 @@ exports.search = onRequest(async (request, response) => {
     distanceMeasure: distance, // 'EUCLIDEAN' | 'COSINE' | 'DOT_PRODUCT'
   })
 
-  const explainResult = await vectorQuery.query.explain({analyze: true})
-  console.log(`Query explained: ${JSON.stringify(explainResult)}`)
+  const explanation = await vectorQuery.query.explain({analyze: true})
+  console.log(`Query explained: ${JSON.stringify(explanation)}`)
 
   const snapshot = await vectorQuery.get()
   console.log(`Found ${snapshot.docs.length} matches`)
