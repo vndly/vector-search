@@ -23,6 +23,11 @@
     .table {
       flex-grow: 1;
     }
+
+    .spinner-border {
+      display: none;
+      margin: 100px auto;
+    }
   </style>
   <script>
     window.onload = function () {
@@ -36,14 +41,18 @@
     }
 
     async function onSearch(query) {
-      showTable(false)
+      enableInput(false)
+      show('moviesList', false)
+      show('loader', true)
       cleanTable()
 
       const url = `https://us-central1-max-prototypes.cloudfunctions.net/search?query=${encodeURIComponent(query)}&distance=COSINE&threshold=0.5&limit=10`
       const response = await fetch(url)
       const json = await response.json()
 
-      showTable(true)
+      show('moviesList', true)
+      show('loader', false)
+      enableInput(true)
 
       for (const movie of json) {
         addMovieRow(movie)
@@ -56,8 +65,8 @@
       tbody.innerHTML = ''
     }
 
-    function showTable(show) {
-      const moviesList = document.getElementById('moviesList')
+    function show(name, show) {
+      const moviesList = document.getElementById(name)
       moviesList.style.display = show ? 'table' : 'none'
     }
 
@@ -68,6 +77,15 @@
       row.insertCell().textContent = movie.genres.join(', ')
       row.insertCell().textContent = movie.summary
       row.insertCell().textContent = movie.cast.join(', ')
+    }
+
+    function enableInput(enable) {
+      const queryInput = document.getElementById('query')
+      queryInput.disabled = !enable
+
+      if (enable) {
+        queryInput.focus()
+      }
     }
   </script>
 </head>
@@ -93,6 +111,7 @@
       </thead>
       <tbody></tbody>
     </table>
+    <div class="spinner-border" id="loader" role="status"></div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
