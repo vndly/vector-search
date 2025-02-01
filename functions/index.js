@@ -25,7 +25,7 @@ exports.import = onRequest(async (_, response) => {
       const id = movie.id
       delete movie.id
       const docRef = db.collection("movies").doc(id.toString())
-      batch.set(docRef, movie)
+      batch.set(docRef, movie, { merge: true })
     }
 
     const writes = await batch.commit()
