@@ -6,7 +6,8 @@ const { onRequest } = require("firebase-functions/v2/https")
 admin.initializeApp()
 
 setGlobalOptions({
-  memory: "512MiB"
+  memory: "512MiB",
+  timeoutSeconds: 530,
 })
 
 const isEmulator = process.env.FIREBASE_EMULATOR_HUB ? true : false
