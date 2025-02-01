@@ -26,7 +26,13 @@
 
     .spinner-border {
       display: none;
-      margin: 100px auto;
+    }
+
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
     }
 
     mark {
@@ -212,7 +218,11 @@
       <tbody>
       </tbody>
     </table>
-    <div class="spinner-border" id="loader" role="status"></div>
+
+    <div class="spinner-container">
+      <div class="spinner-border" id="loader" role="status"></div>
+    </div>
+
   </div>
 
 
