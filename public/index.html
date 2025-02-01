@@ -36,11 +36,14 @@
     }
 
     async function onSearch(query) {
+      showTable(false)
       cleanTable()
 
       const url = `https://us-central1-max-prototypes.cloudfunctions.net/search?query=${encodeURIComponent(query)}&distance=COSINE&threshold=0.5&limit=10`
       const response = await fetch(url)
       const json = await response.json()
+
+      showTable(true)
 
       for (const movie of json) {
         addMovieRow(movie)
@@ -51,6 +54,11 @@
       const moviesList = document.getElementById('moviesList')
       const tbody = moviesList.querySelector('tbody')
       tbody.innerHTML = ''
+    }
+
+    function showTable(show) {
+      const moviesList = document.getElementById('moviesList')
+      moviesList.style.display = show ? 'table' : 'none'
     }
 
     function addMovieRow(movie) {
@@ -74,7 +82,7 @@
       <input type="text" class="form-control" id="query">
     </div>
     <hr>
-    <table class="table" id="moviesList">
+    <table class="table" id="moviesList" style="display:none">
       <thead>
         <tr>
           <th>Name</th>
