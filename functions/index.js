@@ -11,7 +11,7 @@ setGlobalOptions({
 })
 
 const isEmulator = process.env.FIREBASE_EMULATOR_HUB ? true : false
-const recomputeLength = isEmulator ? 3 : 500
+const recomputeLength = isEmulator ? 3 : 400
 
 exports.import = onRequest(async (_, response) => {
   const movies = await getMovies("data/data.csv")
@@ -90,13 +90,13 @@ exports.recompute = onRequest(async (_, response) => {
   const db = admin.firestore()
   const snapshot = await db.collection("movies").where("hasEmbedding", "==", false).limit(recomputeLength).get()
   const batch = db.batch()
+  const { FieldValue } = require("@google-cloud/firestore")
 
   for (const doc of snapshot.docs) {
     const movie = doc.data()
     const embedding = await movieEmbedding(doc.id, movie)
 
     if (embedding) {
-      const { FieldValue } = require("@google-cloud/firestore")
       batch.update(doc.ref, {
         embedding: FieldValue.vector(embedding),
         hasEmbedding: true,
