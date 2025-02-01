@@ -52,32 +52,43 @@
           onSearch(queryInput.value, distanceSelect.value, thresholdInput.value, limitInput.value)
         }
       })
+
+      const searchButton = document.getElementById('searchButton')
+      queryInput.addEventListener('input', function () {
+        searchButton.disabled = queryInput.value.trim().length === 0
+      })
+
+      searchButton.addEventListener('click', function () {
+        onSearch(queryInput.value, distanceSelect.value, thresholdInput.value, limitInput.value)
+      })
     }
 
     async function onSearch(query, distance, threshold, limit) {
-      enableInputs(false)
-      show('moviesList', false)
-      show('loader', true)
-      cleanTable()
+      if (query.trim().length > 0) {
+        enableInputs(false)
+        show('moviesList', false)
+        show('loader', true)
+        cleanTable()
 
-      const url = `https://us-central1-max-prototypes.cloudfunctions.net/search?query=${encodeURIComponent(query)}&distance=${distance}&threshold=${threshold}&limit=${limit}`
+        const url = `https://us-central1-max-prototypes.cloudfunctions.net/search?query=${encodeURIComponent(query)}&distance=${distance}&threshold=${threshold}&limit=${limit}`
 
-      try {
-        const response = await fetch(url)
-        const json = await response.json()
+        try {
+          const response = await fetch(url)
+          const json = await response.json()
 
-        show('moviesList', true)
-        show('loader', false)
-        enableInputs(true)
+          show('moviesList', true)
+          show('loader', false)
+          enableInputs(true)
 
-        for (const movie of json) {
-          addMovieRow(movie)
+          for (const movie of json) {
+            addMovieRow(movie)
+          }
+        } catch (error) {
+          show('loader', false)
+          enableInputs(true)
+
+          console.error(error)
         }
-      } catch (error) {
-        show('loader', false)
-        enableInputs(true)
-
-        console.error(error)
       }
     }
 
@@ -116,6 +127,9 @@
       const limitInput = document.getElementById('limit')
       limitInput.disabled = !enable
 
+      const searchButton = document.getElementById('searchButton')
+      searchButton.disabled = !enable
+
       if (enable) {
         queryInput.focus()
       }
@@ -151,6 +165,8 @@
         <span class="input-group-text">Limit</span>
       </div>
       <input type="number" class="form-control" id="limit" value="10" style="width:100px">
+
+      <button class="btn btn-primary ml-2" id="searchButton" disabled>Search</button>
 
     </div>
 
