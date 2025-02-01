@@ -29,8 +29,8 @@ exports.import = onRequest(async (_, response) => {
     }
 
     const writes = await batch.commit()
-    console.log(`Written ${writes.length} movies`)
     count += writes.length
+    console.log(`Written ${writes.length} movies of ${count}`)
 
     if (isEmulator) {
       break
