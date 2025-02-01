@@ -72,7 +72,12 @@
         const url = `https://us-central1-max-prototypes.cloudfunctions.net/search?query=${encodeURIComponent(query)}&distance=${distance}&threshold=${threshold}&limit=${limit}`
 
         try {
+          const startTime = new Date().getTime()
           const response = await fetch(url)
+          const endTime = new Date().getTime()
+          const totalTime = ((endTime - startTime) / 1000).toFixed(2)
+          console.log(`Request time: ${totalTime}s`)
+
           const json = await response.json()
 
           show('moviesList', true)
