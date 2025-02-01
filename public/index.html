@@ -20,12 +20,17 @@
       height: 100%;
       width: 100%;
       display: flex;
+      padding: 0;
       flex-direction: column;
     }
 
     .spinner-border {
       display: none;
       margin: 100px auto;
+    }
+
+    mark {
+      background-color: yellow;
     }
   </style>
   <script>
@@ -165,7 +170,7 @@
 <body>
   <div class="container">
 
-    <div class="d-flex" style="margin-top:15px">
+    <div class="d-flex" style="padding:15px">
 
       <div class="input-group-prepend">
         <span class="input-group-text">Query</span>
@@ -195,7 +200,7 @@
 
     </div>
 
-    <table class="table table-striped" id="moviesList" style="display:none;margin-top:15px">
+    <table class="table table-striped" id="moviesList" style="display:none;">
       <thead>
         <tr>
           <th>Name</th>
