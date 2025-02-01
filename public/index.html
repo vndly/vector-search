@@ -128,35 +128,33 @@
 <body>
   <div class="container">
 
-    <form class="form-inline" style="margin-top:15px">
-      <div class="input-group mb-3">
+    <div class="d-flex" style="margin-top:15px">
 
-        <div class="input-group-prepend">
-          <span class="input-group-text">Search</span>
-        </div>
-        <input type="text" class="form-control" id="query">
-
-        <div class="input-group-prepend distance-label">
-          <span class="input-group-text">Distance</span>
-        </div>
-        <select class="form-control" id="distance">
-          <option value="COSINE">COSINE</option>
-          <option value="EUCLIDEAN">EUCLIDEAN</option>
-          <option value="DOT_PRODUCT">DOT_PRODUCT</option>
-        </select>
-
-        <div class="input-group-prepend threshold-label">
-          <span class="input-group-text">Threshold</span>
-        </div>
-        <input type="number" class="form-control" id="threshold" value="0.5">
-
-        <div class="input-group-prepend limit-label">
-          <span class="input-group-text">Limit</span>
-        </div>
-        <input type="number" class="form-control" id="limit" value="10">
-
+      <div class="input-group-prepend">
+        <span class="input-group-text">Search</span>
       </div>
-    </form>
+      <input type="text" class="form-control" id="query">
+
+      <div class="input-group-prepend distance-label">
+        <span class="input-group-text">Distance</span>
+      </div>
+      <select class="form-control" id="distance" style="width:200px">
+        <option value="COSINE">COSINE</option>
+        <option value="EUCLIDEAN">EUCLIDEAN</option>
+        <option value="DOT_PRODUCT">DOT_PRODUCT</option>
+      </select>
+
+      <div class="input-group-prepend threshold-label">
+        <span class="input-group-text">Threshold</span>
+      </div>
+      <input type="number" class="form-control" id="threshold" value="0.5" style="width:100px">
+
+      <div class="input-group-prepend limit-label">
+        <span class="input-group-text">Limit</span>
+      </div>
+      <input type="number" class="form-control" id="limit" value="10" style="width:100px">
+
+    </div>
 
     <table class="table" id="moviesList" style="display:none">
       <thead>
