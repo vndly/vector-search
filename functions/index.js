@@ -161,6 +161,7 @@ exports.search = onRequest(async (request, response) => {
     const data = doc.data()
 
     return {
+      id: doc.id,
       title: data.title,
       genres: data.genres,
       summary: data.summary,
