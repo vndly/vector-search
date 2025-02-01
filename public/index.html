@@ -23,10 +23,6 @@
       flex-direction: column;
     }
 
-    .table {
-      flex-grow: 1;
-    }
-
     .spinner-border {
       display: none;
       margin: 100px auto;
@@ -98,7 +94,9 @@
 
     function addMovieRow(movie) {
       const moviesList = document.getElementById('moviesList')
-      const row = moviesList.insertRow()
+      const tbody = moviesList.querySelector('tbody')
+
+      const row = tbody.insertRow()
       row.insertCell().textContent = movie.title
       row.insertCell().textContent = movie.genres.join(', ')
       row.insertCell().textContent = movie.summary
@@ -131,7 +129,7 @@
     <div class="d-flex" style="margin-top:15px">
 
       <div class="input-group-prepend">
-        <span class="input-group-text">Search</span>
+        <span class="input-group-text">Query</span>
       </div>
       <input type="text" class="form-control" id="query">
 
@@ -156,7 +154,7 @@
 
     </div>
 
-    <table class="table" id="moviesList" style="display:none">
+    <table class="table table-striped" id="moviesList" style="display:none;margin-top:15px">
       <thead>
         <tr>
           <th>Name</th>
@@ -165,7 +163,8 @@
           <th>Cast</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+      </tbody>
     </table>
     <div class="spinner-border" id="loader" role="status"></div>
   </div>
