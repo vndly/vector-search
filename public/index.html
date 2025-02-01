@@ -36,20 +36,30 @@
     }
 
     async function onSearch(query) {
-      const url = `https://us-central1-max-prototypes.cloudfunctions.net/search?query=${encodeURIComponent(query)}&distance=COSINE&threshold=0.5&limit=10`;
-      console.log('Search for:', query)
+      cleanTable()
+
+      const url = `https://us-central1-max-prototypes.cloudfunctions.net/search?query=${encodeURIComponent(query)}&distance=COSINE&threshold=0.5&limit=10`
       const response = await fetch(url)
       const json = await response.json()
-      console.log('Search results:', json)
 
-      /*.then(response => response.json())
-      .then(data => {
-        console.log('Search results:', data)
-        // Add your logic to handle the search results here
-      })
-      .catch(error => {
-        console.error('Error fetching search results:', error)
-      })*/
+      for (const movie of json) {
+        addMovieRow(movie)
+      }
+    }
+
+    function cleanTable() {
+      const moviesList = document.getElementById('moviesList')
+      const tbody = moviesList.querySelector('tbody')
+      tbody.innerHTML = ''
+    }
+
+    function addMovieRow(movie) {
+      const moviesList = document.getElementById('moviesList')
+      const row = moviesList.insertRow()
+      row.insertCell().textContent = movie.title
+      row.insertCell().textContent = movie.genres.join(', ')
+      row.insertCell().textContent = movie.summary
+      row.insertCell().textContent = movie.cast.join(', ')
     }
   </script>
 </head>
@@ -68,7 +78,7 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Genres</th>
+          <th>Genre</th>
           <th>Summary</th>
           <th>Cast</th>
         </tr>
