@@ -40,39 +40,6 @@ exports.import = onRequest(async (_, response) => {
   response.send(`Imported ${count} movies`)
 })
 
-exports.recompute = onRequest(async (_, response) => {
-  const db = admin.firestore()
-  const snapshot = await db.collection("movies").where("hasEmbedding", "==", false).limit(recomputeLength).get()
-  const batch = db.batch()
-
-  for (const doc of snapshot.docs) {
-    const movie = doc.data()
-    const embedding = await movieEmbedding(movie)
-
-    if (embedding) {
-      batch.update(doc.ref, {
-        embedding: embedding,
-        hasEmbedding: true,
-      })
-    } else {
-      console.log(`Error calculating embedding for ${movie.id}`)
-    }
-  }
-
-  const writes = await batch.commit()
-  response.send(`Updated ${writes.length} movies`)
-})
-
-const chunkArray = (array, chunkSize) => {
-  const chunks = []
-
-  for (let i = 0; i < array.length; i += chunkSize) {
-    chunks.push(array.slice(i, i + chunkSize))
-  }
-
-  return chunks
-}
-
 const getMovies = (filePath) => {
   return new Promise((resolve, reject) => {
     const results = []
@@ -105,6 +72,55 @@ const cleanArray = (input) => {
   const array = input.split(",").map(e => e.trim())
 
   return array.filter(value => (value !== undefined) && (value !== null) && (value !== ""))
+}
+
+const chunkArray = (array, chunkSize) => {
+  const chunks = []
+
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize))
+  }
+
+  return chunks
+}
+
+exports.recompute = onRequest(async (_, response) => {
+  const db = admin.firestore()
+  const snapshot = await db.collection("movies").where("hasEmbedding", "==", false).limit(recomputeLength).get()
+  const batch = db.batch()
+
+  for (const doc of snapshot.docs) {
+    const movie = doc.data()
+    const embedding = await movieEmbedding(doc.id, movie)
+
+    if (embedding) {
+      const { FieldValue } = require("@google-cloud/firestore")
+      batch.update(doc.ref, {
+        embedding: FieldValue.vector(embedding),
+        hasEmbedding: true,
+      })
+    } else {
+      console.log(`Error calculating embedding for ${movie.id}`)
+    }
+  }
+
+  const writes = await batch.commit()
+  response.send(`Updated ${writes.length} movies`)
+})
+
+const movieEmbedding = async (id, movie) => {
+  const values = [
+    movie.title,
+    movie.genres.join(" "),
+    movie.summary,
+    movie.cast.join(" "),
+  ].join(" ")
+
+  console.log(`Calculating embeddings for "${id}" with: "${values}"`)
+  const embedding = await calculateEmbedding(values)
+  console.log(`Calculated embeddings of length: ${embedding.length}`)
+
+  return embedding
 }
 
 // https://firebase.google.com/docs/firestore/vector-search
@@ -172,25 +188,10 @@ exports.search = onRequest(async (request, response) => {
   }
 })*/
 
-const movieEmbedding = async (movie) => {
-  const values = [
-    movie.title,
-    movie.genres.join(" "),
-    movie.summary,
-    movie.cast.join(" "),
-  ].join(" ")
-
-  console.log(`Calculating embeddings with: "${values}"`)
-  const embedding = await calculateEmbedding(values)
-  console.log(`Calculated embeddings of length: ${embedding.length}`)
-
-  return embedding
-}
-
 // https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#generative-ai-get-text-embedding-nodejs
 // https://console.cloud.google.com/apis/api/aiplatform.googleapis.com/cost?inv=1&invt=AboQqA&project=max-prototypes
 const calculateEmbedding = async (text) => {
-  if (isEmulator) {
+  if (!isEmulator) {
     try {
       const aiplatform = require("@google-cloud/aiplatform")
       const { PredictionServiceClient } = aiplatform.v1
