@@ -4,15 +4,39 @@
 <head>
   <title>Movies</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-  <script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
 
+    .container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table {
+      flex-grow: 1;
+    }
+  </style>
+  <script>
+    window.onload = function () {
+      document.getElementById('search').focus()
+    }
   </script>
 </head>
 
 <body>
   <div class="container">
     <br>
-    <input type="text" class="form-control" id="search">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Search</span>
+      </div>
+      <input type="text" class="form-control" id="search">
+    </div>
     <hr>
     <table class="table" id="moviesList">
       <thead>
