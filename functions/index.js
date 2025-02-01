@@ -130,7 +130,7 @@ const movieEmbedding = async (id, movie) => {
 // https://firebase.google.com/docs/firestore/vector-search
 // https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
 // https://www.youtube.com/watch?v=3u7u4mNbYZI
-exports.search = onRequest(async (request, response) => {
+exports.search = onRequest({ cors: true }, async (request, response) => {
   const query = request.query.query.toString().toLowerCase()
   const distance = request.query.distance.toString().toUpperCase()
   const threshold = parseFloat(request.query.threshold)

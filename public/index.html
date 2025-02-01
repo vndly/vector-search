@@ -38,9 +38,9 @@
     async function onSearch(query) {
       const url = `https://us-central1-max-prototypes.cloudfunctions.net/search?query=${encodeURIComponent(query)}&distance=COSINE&threshold=0.5&limit=10`;
       console.log('Search for:', query)
-      console.log('URL', url)
       const response = await fetch(url)
-      console.log('Search results:', response)
+      const json = await response.json()
+      console.log('Search results:', json)
 
       /*.then(response => response.json())
       .then(data => {
