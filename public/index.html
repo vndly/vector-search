@@ -59,7 +59,7 @@
     }
 
     async function onSearch(query, distance, threshold, limit) {
-      enableInput(false)
+      enableInputs(false)
       show('moviesList', false)
       show('loader', true)
       cleanTable()
@@ -72,14 +72,14 @@
 
         show('moviesList', true)
         show('loader', false)
-        enableInput(true)
+        enableInputs(true)
 
         for (const movie of json) {
           addMovieRow(movie)
         }
       } catch (error) {
         show('loader', false)
-        enableInput(true)
+        enableInputs(true)
 
         console.error(error)
       }
@@ -105,9 +105,18 @@
       row.insertCell().textContent = movie.cast.join(', ')
     }
 
-    function enableInput(enable) {
+    function enableInputs(enable) {
       const queryInput = document.getElementById('query')
       queryInput.disabled = !enable
+
+      const distanceSelect = document.getElementById('distance')
+      distanceSelect.disabled = !enable
+
+      const thresholdInput = document.getElementById('threshold')
+      thresholdInput.disabled = !enable
+
+      const limitInput = document.getElementById('limit')
+      limitInput.disabled = !enable
 
       if (enable) {
         queryInput.focus()
@@ -130,8 +139,8 @@
         <span class="input-group-text">Distance</span>
       </div>
       <select class="form-control" id="distance">
-        <option value="EUCLIDEAN">EUCLIDEAN</option>
         <option value="COSINE">COSINE</option>
+        <option value="EUCLIDEAN">EUCLIDEAN</option>
         <option value="DOT_PRODUCT">DOT_PRODUCT</option>
       </select>
 

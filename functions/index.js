@@ -6,7 +6,7 @@ const { onRequest } = require("firebase-functions/v2/https")
 admin.initializeApp()
 
 setGlobalOptions({
-  memory: "512MiB",
+  memory: "1GiB",
   timeoutSeconds: 530,
 })
 
