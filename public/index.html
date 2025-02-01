@@ -2,54 +2,33 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vector search test</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+  <title>Movies</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <script>
 
-    div {
-      text-align: center;
-    }
-  </style>
+  </script>
 </head>
 
 <body>
-  <div>
-    <input id="query"></input>
-    <button id="searchButton" disabled>SEARCH</button>
+  <div class="container">
+    <br>
+    <input type="text" class="form-control" id="search">
+    <hr>
+    <table class="table" id="moviesList">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Genres</th>
+          <th>Summary</th>
+          <th>Cast</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 
-  <script>
-    const queryInput = document.getElementById('query');
-    const searchButton = document.getElementById('searchButton');
-
-    window.onload = function () {
-      queryInput.focus();
-    };
-
-    queryInput.addEventListener('input', function () {
-      searchButton.disabled = queryInput.value.trim() === '';
-    });
-
-    queryInput.addEventListener('keypress', function (event) {
-      if (event.key === 'Enter' && !searchButton.disabled) {
-        searchButton.click();
-      }
-    });
-
-    searchButton.addEventListener('click', function () {
-      const query = queryInput.value;
-      const url = 'https://us-central1-max-prototypes.cloudfunctions.net/search?query=' + encodeURIComponent(query);
-      window.location.href = url;
-    });
-  </script>
+  <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 
 </html>
