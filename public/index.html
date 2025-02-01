@@ -144,12 +144,23 @@
     }
 
     function highlightText(text, query) {
+      let result = text
+      const words = query.split(" ").map(e => e.trim()).filter(value => (value !== undefined) && (value !== null) && (value !== ""))
+
+      for (const word of words) {
+        result = highlightWord(result, word)
+      }
+
+      return result
+    }
+
+    function highlightWord(text, word) {
       const lowerText = text.toLowerCase()
-      const lowerQuery = query.toLowerCase()
-      const index = lowerText.indexOf(lowerQuery)
+      const lowerWord = word.toLowerCase()
+      const index = lowerText.indexOf(lowerWord)
 
       if (index >= 0) {
-        return text.substring(0, index) + '<mark>' + text.substring(index, index + query.length) + '</mark>' + text.substring(index + query.length)
+        return text.substring(0, index) + '<mark>' + text.substring(index, index + word.length) + '</mark>' + text.substring(index + word.length)
       } else {
         return text
       }
