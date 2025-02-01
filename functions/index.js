@@ -10,6 +10,7 @@ setGlobalOptions({
 })
 
 const isEmulator = process.env.FIREBASE_EMULATOR_HUB ? true : false
+const recomputeLength = isEmulator ? 3 : 500
 
 exports.import = onRequest(async (_, response) => {
   const movies = await getMovies("data/data.csv")
@@ -40,9 +41,8 @@ exports.import = onRequest(async (_, response) => {
 })
 
 exports.recompute = onRequest(async (_, response) => {
-  let count = 0
   const db = admin.firestore()
-  const snapshot = await db.collection("movies").where("hasEmbedding", "==", false).limit(5).get()
+  const snapshot = await db.collection("movies").where("hasEmbedding", "==", false).limit(recomputeLength).get()
   const batch = db.batch()
 
   for (const doc of snapshot.docs) {
@@ -60,10 +60,7 @@ exports.recompute = onRequest(async (_, response) => {
   }
 
   const writes = await batch.commit()
-  console.log(`Updated ${writes.length} movies`)
-  count += writes.length
-
-  response.send(`Updated ${count} movies`)
+  response.send(`Updated ${writes.length} movies`)
 })
 
 const chunkArray = (array, chunkSize) => {
@@ -181,10 +178,10 @@ const movieEmbedding = async (movie) => {
     movie.genres.join(" "),
     movie.summary,
     movie.cast.join(" "),
-  ]
+  ].join(" ")
 
-  console.log(`Calculating embeddings with: "${values.join("\n")}"`)
-  const embedding = await calculateEmbedding(values.join("\n"))
+  console.log(`Calculating embeddings with: "${values}"`)
+  const embedding = await calculateEmbedding(values)
   console.log(`Calculated embeddings of length: ${embedding.length}`)
 
   return embedding
