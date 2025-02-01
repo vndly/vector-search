@@ -135,7 +135,7 @@ exports.search = onRequest(async (request, response) => {
   const distance = request.query.distance.toString().toUpperCase()
   const threshold = parseFloat(request.query.threshold)
   const limit = parseInt(request.query.limit)
-  console.log(`Query "${query}" using distance "${distance} limited to "${limit}"`)
+  console.log(`Query "${query}" using distance "${distance} and threshold of "${threshold}" limited to "${limit}"`)
 
   console.log(`Calculating embedding for query "${query}"`)
   const embedding = await calculateEmbedding(query)
