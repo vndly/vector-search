@@ -107,11 +107,36 @@
       const moviesList = document.getElementById('moviesList')
       const tbody = moviesList.querySelector('tbody')
 
-      const row = tbody.insertRow()
-      row.insertCell().textContent = highlightText(movie.title, query)
-      row.insertCell().textContent = highlightText(movie.genres.join(', '), query)
-      row.insertCell().textContent = highlightText(movie.summary, query)
-      row.insertCell().textContent = highlightText(movie.cast.join(', '), query)
+      const name = highlightText(movie.title, query)
+      const genre = highlightText(movie.genres.join(', '), query)
+      const summary = highlightText(movie.summary, query)
+      const cast = highlightText(movie.cast.join(', '), query)
+
+      const row = createRow(name, genre, summary, cast)
+      tbody.appendChild(row)
+    }
+
+    function createRow(name, genre, summary, cast) {
+      const row = document.createElement('tr')
+
+      const nameCell = document.createElement('td')
+      nameCell.innerHTML = name
+
+      const genreCell = document.createElement('td')
+      genreCell.innerHTML = genre
+
+      const summaryCell = document.createElement('td')
+      summaryCell.innerHTML = summary
+
+      const castCell = document.createElement('td')
+      castCell.innerHTML = cast
+
+      row.appendChild(nameCell)
+      row.appendChild(genreCell)
+      row.appendChild(summaryCell)
+      row.appendChild(castCell)
+
+      return row
     }
 
     function highlightText(text, query) {
