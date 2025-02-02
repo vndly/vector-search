@@ -111,17 +111,21 @@
       const moviesList = document.getElementById('moviesList')
       const tbody = moviesList.querySelector('tbody')
 
+      const distance = movie.vector_distance.toFixed(3)
       const name = highlightText(movie.title, query)
       const genre = highlightText(movie.genres.join(', '), query)
       const cast = highlightText(movie.cast.join(', '), query)
       const summary = highlightText(movie.summary, query)
 
-      const row = createRow(name, genre, cast, summary)
+      const row = createRow(distance, name, genre, cast, summary)
       tbody.appendChild(row)
     }
 
-    function createRow(name, genre, cast, summary) {
+    function createRow(distance, name, genre, cast, summary) {
       const row = document.createElement('tr')
+
+      const distanceCell = document.createElement('td')
+      distanceCell.innerHTML = distance
 
       const nameCell = document.createElement('td')
       nameCell.innerHTML = name
@@ -135,6 +139,7 @@
       const summaryCell = document.createElement('td')
       summaryCell.innerHTML = summary
 
+      row.appendChild(distanceCell)
       row.appendChild(nameCell)
       row.appendChild(genreCell)
       row.appendChild(castCell)
@@ -225,6 +230,7 @@
     <table class="table table-striped" id="moviesList" style="display:none;">
       <thead>
         <tr>
+          <th>Distance</th>
           <th>Name</th>
           <th>Genre</th>
           <th>Cast</th>
