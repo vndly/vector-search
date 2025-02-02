@@ -3,4 +3,4 @@
 https://max-prototypes.web.app
 https://us-central1-max-prototypes.cloudfunctions.net/import
 https://us-central1-max-prototypes.cloudfunctions.net/recompute
-https://us-central1-max-prototypes.cloudfunctions.net/search?query=jared&distance=COSINE&threshold=0.5&limit=10
+https://us-central1-max-prototypes.cloudfunctions.net/search?query=john&distance=COSINE&threshold=0.5&limit=10

@@ -144,7 +144,6 @@ exports.search = onRequest({ cors: true }, async (request, response) => {
   const db = admin.firestore()
   const collection = db.collection("movies").where("embedding", "!=", null)
 
-  const startTime = new Date().getTime()
   const vectorQuery = collection.findNearest({
     vectorField: "embedding",
     queryVector: embedding,
@@ -160,10 +159,6 @@ exports.search = onRequest({ cors: true }, async (request, response) => {
   const snapshot = await vectorQuery.get()
   console.log(`Found ${snapshot.docs.length} matches`)
 
-  const endTime = new Date().getTime()
-  const totalTime = ((endTime - startTime) / 1000).toFixed(2)
-  console.log(`Request time: ${totalTime}s`)
-
   const matches = snapshot.docs.map(doc => {
     const data = doc.data()
 
@@ -173,6 +168,7 @@ exports.search = onRequest({ cors: true }, async (request, response) => {
       genres: data.genres,
       summary: data.summary,
       cast: data.cast,
+      vector_distance: data.vector_distance,
     }
   })
 
