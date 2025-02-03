@@ -127,9 +127,6 @@ const movieEmbedding = async (id, movie) => {
   return embedding
 }
 
-// https://firebase.google.com/docs/firestore/vector-search
-// https://cloud.google.com/blog/products/databases/get-started-with-firestore-vector-similarity-search
-// https://www.youtube.com/watch?v=3u7u4mNbYZI
 exports.search = onRequest({ cors: true }, async (request, response) => {
   const query = request.query.query.toString().toLowerCase()
   const distance = request.query.distance.toString().toUpperCase()
@@ -153,9 +150,6 @@ exports.search = onRequest({ cors: true }, async (request, response) => {
     distanceMeasure: distance, // 'EUCLIDEAN' | 'COSINE' | 'DOT_PRODUCT'
   })
 
-  //const explanation = await vectorQuery.query.explain({analyze: true})
-  //console.log(`Query explained: ${JSON.stringify(explanation)}`)
-
   const snapshot = await vectorQuery.get()
   console.log(`Found ${snapshot.docs.length} matches`)
 
@@ -174,29 +168,6 @@ exports.search = onRequest({ cors: true }, async (request, response) => {
 
   response.send(matches)
 })
-
-/*exports.onMovieCreated = onDocumentWritten("movies/{id}", async (event) => {
-  if (!isEmulator) {
-    const movie = event.data.after.data()
-    const path = event.document
-    console.log(`Movie updated: ${path} data: ${JSON.stringify(movie)}`)
-
-    if (!movie.embedding) {
-      console.log(`Calculating embedding for ${path}`)
-      const embedding = await movieEmbedding(movie)
-      const db = admin.firestore()
-      const docRef = db.doc(path)
-      const { FieldValue } = require("@google-cloud/firestore")
-
-      await docRef.update({
-        embedding: FieldValue.vector(embedding),
-      })
-      console.log(`Embeddings updated for ${path}`)
-    } else {
-      console.log(`Movie already had embedding ${path}`)
-    }
-  }
-})*/
 
 // https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#generative-ai-get-text-embedding-nodejs
 // https://console.cloud.google.com/apis/api/aiplatform.googleapis.com/cost?inv=1&invt=AboQqA&project=max-prototypes
