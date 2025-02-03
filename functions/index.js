@@ -170,7 +170,6 @@ exports.search = onRequest({ cors: true }, async (request, response) => {
 })
 
 // https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#generative-ai-get-text-embedding-nodejs
-// https://console.cloud.google.com/apis/api/aiplatform.googleapis.com/cost?inv=1&invt=AboQqA&project=max-prototypes
 const calculateEmbedding = async (text) => {
   if (!isEmulator) {
     try {
