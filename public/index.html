@@ -73,6 +73,11 @@
       searchButton.addEventListener('click', function () {
         search()
       })
+
+      const distanceHelp = document.getElementById('distanceHelp')
+      distanceHelp.addEventListener('click', function () {
+        $('#infoModal').modal('show')
+      })
     }
 
     function search() {
@@ -230,12 +235,15 @@
       <!-- https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#distancemeasure -->
       <div class="input-group-prepend distance-label" style="margin-left:10px">
         <span class="input-group-text">Distance</span>
+        <select class="form-control" id="distance" style="width:200px">
+          <option value="COSINE">COSINE</option>
+          <option value="EUCLIDEAN">EUCLIDEAN</option>
+          <option value="DOT_PRODUCT">DOT_PRODUCT</option>
+        </select>
+        <div class="input-group-prepend">
+          <div class="btn input-group-text" id="distanceHelp"><i class="fas fa-info-circle"></i></div>
+        </div>
       </div>
-      <select class="form-control" id="distance" style="width:200px">
-        <option value="COSINE">COSINE</option>
-        <option value="EUCLIDEAN">EUCLIDEAN</option>
-        <option value="DOT_PRODUCT">DOT_PRODUCT</option>
-      </select>
 
       <div class="input-group-prepend threshold-label" style="margin-left:10px">
         <span class="input-group-text">Threshold</span>
@@ -271,7 +279,24 @@
 
   </div>
 
+  <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="infoModalLabel">Distance</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>This is some static information displayed in the modal.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
