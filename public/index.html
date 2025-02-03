@@ -103,6 +103,14 @@
       onSearch(queryInput.value.trim(), distanceSelect.value, thresholdInput.value, limitInput.value)
     }
 
+    function baseUrl() {
+      if (window.location.href.startsWith('http://127.0.0.1')) {
+        return 'http://127.0.0.1:5001/max-prototypes/us-central1';
+      } else {
+        return 'https://us-central1-max-prototypes.cloudfunctions.net';
+      }
+    }
+
     async function onSearch(query, distance, threshold, limit) {
       if (query.length > 0) {
         enableInputs(false)
@@ -110,7 +118,7 @@
         show('loader', true)
         cleanTable()
 
-        const url = `https://us-central1-max-prototypes.cloudfunctions.net/search?query=${encodeURIComponent(query)}&distance=${distance}&threshold=${threshold}&limit=${limit}`
+        const url = `${baseUrl()}/search?query=${encodeURIComponent(query)}&distance=${distance}&threshold=${threshold}&limit=${limit}`
 
         try {
           const startTime = new Date().getTime()
@@ -271,7 +279,7 @@
 
     </div>
 
-    <table class="table table-striped" id="moviesList" style="display:none;">
+    <table class="table table-striped" id="moviesList" style="display:none">
       <thead>
         <tr>
           <th>Distance</th>
