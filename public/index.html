@@ -35,6 +35,20 @@
       height: 80vh;
     }
 
+    .modal-dialog-centered {
+      display: flex;
+      align-items: center;
+      min-height: calc(100% - 1rem);
+    }
+
+    .distance-description {
+      color: #777777;
+    }
+
+    h6 {
+      font-weight: bold;
+    }
+
     mark {
       background-color: yellow;
     }
@@ -231,8 +245,6 @@
       </div>
       <input type="text" class="form-control" id="query">
 
-      <!-- https://firebase.google.com/docs/firestore/vector-search#vector_distances -->
-      <!-- https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#distancemeasure -->
       <div class="input-group-prepend distance-label" style="margin-left:10px">
         <span class="input-group-text">Distance</span>
         <select class="form-control" id="distance" style="width:200px">
@@ -279,9 +291,10 @@
 
   </div>
 
+  <!-- https://firebase.google.com/docs/firestore/reference/rest/v1beta1/StructuredQuery#distancemeasure -->
   <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="infoModalLabel">Distance</h5>
@@ -290,7 +303,32 @@
           </button>
         </div>
         <div class="modal-body">
-          <p>This is some static information displayed in the modal.</p>
+
+          <h6>EUCLIDEAN</h6>
+          <p class="distance-description">Measures the <i>EUCLIDEAN</i> distance between the vectors. To learn
+            more, see
+            <a href="https://en.wikipedia.org/wiki/Euclidean_distance" target="_blank">Euclidean</a>. The resulting
+            distance <b>decreases</b> the more similar two vectors are.
+          </p>
+
+          <h6>COSINE</h6>
+          <p class="distance-description">Compares vectors based on the angle between them which lets you measure
+            similarity that isn't based on the vectors magnitude. To learn more, see <a
+              href="https://en.wikipedia.org/wiki/Cosine_similarity" target="_blank">Cosine similarity</a>. It's
+            recommend to use <i>DOT_PRODUCT</i> with unit normalized vectors instead of <i>COSINE</i>
+            distance, which is mathematically equivalent with better performance. <i>COSINE</i> is like
+            <i>DOT_PRODUCT</i> with normalization built in. Distance measured using <i>COSINE</i> ranges
+            from 0 to 2.The resulting distance <b>decreases</b> the more similar two vectors are.
+          </p>
+
+          <h6>DOT_PRODUCT</h6>
+          <p class="distance-description">Similar to <i>COSINE</i> but is affected by the magnitude of the
+            vectors. To
+            learn
+            more, see <a href="https://en.wikipedia.org/wiki/Dot_product" target="_blank">Dot product</a>. It is usually
+            the most computationally efficient, but the difference is negligible in most cases. The resulting
+            distance <b>increases</b> the more similar two vectors are.</p>
+
         </div>
       </div>
     </div>
